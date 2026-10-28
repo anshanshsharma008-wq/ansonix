@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ANSON Kids Arcade</title>
+<style>
+:root{--bg:#f5f7ff;--card:#fff;--ink:#17203b;--muted:#69738e;--accent:#6558f5;--line:#e5e9f6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#6558f5,#b44df0);color:white;padding:22px max(18px,calc((100% - 1180px)/2));}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.brand{font-size:25px;font-weight:900;letter-spacing:.3px}.tag{opacity:.92;font-size:14px}
+.wrap{max-width:1180px;margin:auto;padding:20px}.hero{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:center;box-shadow:0 8px 25px #25315a0b}
+.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.08;margin:0 0 10px}.hero p{color:var(--muted);margin:0 0 16px}.hero-art{font-size:clamp(65px,10vw,115px);text-align:center;background:#f0efff;border-radius:18px;padding:14px}
+.searchrow{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}input,select,button{font:inherit;border-radius:12px;padding:12px 14px;border:1px solid var(--line)}input,select{background:white;color:var(--ink)}#search{flex:1;min-width:180px}button{cursor:pointer;border:0;background:var(--accent);color:white;font-weight:750}button.secondary{background:#ecebff;color:#4b42cb}button.danger{background:#fff0f0;color:#a32626;border:1px solid #ffd5d5}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:24px 0 12px}.sectionhead h2{margin:0;font-size:22px}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.game{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 5px 18px #26315c0a;display:flex;flex-direction:column;min-width:0}.thumb{height:125px;display:grid;place-items:center;font-size:52px;background:linear-gradient(135deg,#fff0c7,#ffe0e8)}.game:nth-child(3n+2) .thumb{background:linear-gradient(135deg,#dff8ef,#dceeff)}.game:nth-child(3n) .thumb{background:linear-gradient(135deg,#efe3ff,#e4e4ff)}.gbody{padding:13px;display:flex;flex-direction:column;gap:7px;flex:1}.gbody h3{font-size:16px;margin:0}.gbody p{margin:0;color:var(--muted);font-size:12px;flex:1}.gbody button{width:100%;padding:10px}
+.note{margin-top:22px;padding:14px 16px;border:1px solid #f4d78b;background:#fff9e8;border-radius:14px;color:#6d5311;font-size:13px;line-height:1.5}
+footer{text-align:center;color:var(--muted);padding:28px 12px;font-size:12px}
+.modal{position:fixed;inset:0;background:#10162dcc;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.show{display:flex}.panel{background:white;border-radius:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto;padding:20px}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:10px}.panelhead h2{margin:0}.close{background:#edf0fa;color:#29324d}.playarea{background:#f5f7ff;border-radius:16px;padding:20px;text-align:center;margin-top:14px}.bigemoji{font-size:72px}.score{font-weight:800;margin:10px}.playarea button{margin:5px}.admin{display:none}.admin.show{display:block}.adminlist{display:grid;gap:8px;margin-top:14px}.adminitem{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);padding:10px;border-radius:12px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.formgrid input,.formgrid select{width:100%}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{grid-template-columns:1fr}.hero-art{display:none}}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wrap{padding:13px}.thumb{height:100px;font-size:43px}.gbody{padding:10px}.formgrid{grid-template-columns:1fr}.brand{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div><div class="brand">🎮 ANSON Kids Arcade</div><div class="tag">Play • Learn • Explore</div></div><button id="adminOpen" class="secondary" style="background:white;color:#5144d4">Admin</button></div></header>
+<main class="wrap">
+<section class="hero"><div><h1>Big fun for little players!</h1><p>Discover quick mini-games, puzzles, memory challenges and creative play.</p><button onclick="document.getElementById('gamesTitle').scrollIntoView({behavior:'smooth'})">Explore games ↓</button></div><div class="hero-art">🧩 🚀 🐼</div></section>
+<div class="searchrow"><input id="search" placeholder="Search games..." aria-label="Search games"><select id="category" aria-label="Filter category"><option value="All">All categories</option><option>Puzzle</option><option>Memory</option><option>Arcade</option><option>Learning</option><option>Creative</option></select><select id="sort" aria-label="Sort games"><option value="featured">Featured</option><option value="az">Name A–Z</option></select></div>
+<div class="sectionhead" id="gamesTitle"><h2>🌟 Games library</h2><span id="count" class="muted"></span></div>
+<div class="grid" id="games"></div>
+<div class="note"><strong>Parent note:</strong> This single-file website includes 12 playable mini-games made for this page. It does not contain 999+ real games. The library can list more games, but each additional game needs its own playable code or a properly licensed game embed. This version works offline in a modern browser; admin changes are saved only in this browser.</div>
+</main>
+<footer>ANSON Kids Arcade · Play kindly and take breaks.</footer>
+
+<div class="modal" id="playModal" role="dialog" aria-modal="true" aria-labelledby="playTitle"><div class="panel"><div class="panelhead"><h2 id="playTitle">Game</h2><button class="close" id="closePlay">Close ✕</button></div><div class="playarea" id="playArea"></div></div></div>
+<div class="modal" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle"><div class="panel"><div class="panelhead"><h2 id="adminTitle">Admin panel</h2><button class="close" id="closeAdmin">Close ✕</button></div>
+<div id="loginBox"><p class="muted">Sign in to manage the game list on this device.</p><form id="loginForm"><input id="adminPassword" type="password" placeholder="Admin password" autocomplete="current-password" required style="width:100%;margin:8px 0"><button type="submit">Sign in</button><p id="loginMsg" class="muted"></p></form><p class="muted">Security note: in a single HTML file, a password is not truly secret. Use a server-backed login before publishing an admin panel publicly.</p></div>
+<div class="admin" id="adminPanel"><p class="muted">Add a game card or remove custom cards. Changes are local to this browser only.</p><form id="addForm"><div class="formgrid"><input id="newName" placeholder="Game name" required maxlength="50"><input id="newEmoji" placeholder="Emoji, e.g. 🐸" value="🎲" maxlength="8"><select id="newCategory"><option>Puzzle</option><option>Memory</option><option>Arcade</option><option>Learning</option><option>Creative</option></select><input id="newDesc" placeholder="Short description" required maxlength="100"></div><button type="submit" style="margin-top:10px">Add game card</button></form><div class="adminlist" id="adminList"></div><button id="logout" class="secondary" style="margin-top:12px">Sign out</button></div>
+</div></div>
+<script>
+const builtins = [
+{id:'g1',name:'Emoji Match',emoji:'😀',category:'Puzzle',desc:'Find the matching emoji.',type:'match'},
+{id:'g2',name:'Memory Flip',emoji:'🧠',category:'Memory',desc:'Remember and match the cards.',type:'memory'},
+{id:'g3',name:'Number Pop',emoji:'🔢',category:'Learning',desc:'Choose the bigger number.',type:'numbers'},
+{id:'g4',name:'Color Tap',emoji:'🌈',category:'Learning',desc:'Tap the color named on screen.',type:'color'},
+{id:'g5',name:'Rock Paper Scissors',emoji:'✂️',category:'Arcade',desc:'Play a quick round against the computer.',type:'rps'},
+{id:'g6',name:'Quick Math',emoji:'➕',category:'Learning',desc:'Solve a tiny math challenge.',type:'math'},
+{id:'g7',name:'Odd One Out',emoji:'🐼',category:'Puzzle',desc:'Pick the emoji that is different.',type:'odd'},
+{id:'g8',name:'Reaction Tap',emoji:'⚡',category:'Arcade',desc:'Test your tapping speed.',type:'reaction'},
+{id:'g9',name:'Word Scramble',emoji:'🔤',category:'Learning',desc:'Unscramble a simple word.',type:'word'},
+{id:'g10',name:'Treasure Pick',emoji:'💎',category:'Arcade',desc:'Pick a chest to find treasure.',type:'treasure'},
+{id:'g11',name:'Shape Quiz',emoji:'🔺',category:'Puzzle',desc:'Find the shape asked for.',type:'shape'},
+{id:'g12',name:'Draw with Emoji',emoji:'🎨',category:'Creative',desc:'Make a tiny emoji picture.',type:'creative'}
+];
+const STORE='ansonKidsCustomGames_v1';
+let custom=[]; try{custom=JSON.parse(localStorage.getItem(STORE)||'[]')}catch(e){custom=[]}
+let adminLoggedIn=false, round=0, score=0, reactionReady=false, reactionStart=0, reactionTimer=null;
+const allGames=()=>[...builtins,...custom];
+const $=id=>document.getElementById(id);
+function saveCustom(){localStorage.setItem(STORE,JSON.stringify(custom))}
+function renderGames(){
+ const term=$('search').value.trim().toLowerCase(), cat=$('category').value, sort=$('sort').value;
+ let games=allGames().filter(g=>(cat==='All'||g.category===cat)&&(g.name+' '+g.desc+' '+g.category).toLowerCase().includes(term));
+ if(sort==='az')games.sort((a,b)=>a.name.localeCompare(b.name));
+ $('count').textContent=games.length+' games shown · '+allGames().length+' listed';
+ $('games').innerHTML=games.map(g=>`<article class="game"><div class="thumb">${esc(g.emoji)}</div><div class="gbody"><h3>${esc(g.name)}</h3><p>${esc(g.category)} · ${esc(g.desc)}</p><button data-play="${esc(g.id)}">Play now ▶</button></div></article>`).join('')||'<p>No games found. Try another search.</p>';
+ $('games').querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>startGame(b.dataset.play)));
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function gameById(id){return allGames().find(g=>g.id===id)}
+function openPlay(g){$('playTitle').textContent=g.name;$('playArea').innerHTML='';$('playModal').classList.add('show')}
+function startGame(id){
+ const g=gameById(id);if(!g)return;openPlay(g);round=0;score=0;
+ const area=$('playArea');
+ const say=(s)=>{let el=$('gameMsg');if(el)el.textContent=s};
+ const buttons=(arr)=>arr.map(x=>`<button data-v="${esc(x.v)}">${esc(x.t)}</button>`).join('');
+ function question(title,arr,correct,success='Great job! 🎉'){
+   area.innerHTML=`<div class="bigemoji">${esc(g.emoji)}</div><h3>${title}</h3><div>${buttons(arr)}</div><div id="gameMsg" class="score" aria-live="polite"></div><button class="secondary" id="again">New round</button>`;
+   area.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{if(b.dataset.v===String(correct)){score++;say(success)}else say('Good try! The answer was '+correct+'.');});
+   $('again').onclick=()=>startGame(id);
+ }
+ switch(g.type){
+ case'match':{let a=['🐸','🍎','🚀','🐸'];let correct='🐸';question('Tap the emoji that matches '+correct,a.map((v,i)=>({v,t:v+' '+(i+1)})),correct);break}
+ case'memory':{let pair=['🍓','⭐','🍓','⭐','🐸','🐸'];let shuffled=pair.sort(()=>Math.random()-.5);area.innerHTML='<div class="bigemoji">🧠</div><h3>Find two matching cards</h3><div class="memorygrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+shuffled.map((v,i)=>`<button data-i="${i}" data-v="${v}" style="font-size:26px;background:#e9e8ff;color:#333">❔</button>`).join('')+'</div><p id="gameMsg" class="score">Pick two cards.</p><button class="secondary" id="again">Restart</button>';let chosen=[];area.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{if(b.disabled)return;b.textContent=b.dataset.v;chosen.push(b);if(chosen.length===2){if(chosen[0].dataset.v===chosen[1].dataset.v){chosen.forEach(x=>x.disabled=true);$('gameMsg').textContent='Match found! 🎉'}else{let old=[...chosen];setTimeout(()=>old.forEach(x=>{x.textContent='❔'}),650);$('gameMsg').textContent='Not a pair — try again.'}chosen=[]}});$('again').onclick=()=>startGame(id);break}
+ case'numbers':{let a=1+Math.floor(Math.random()*20),b=1+Math.floor(Math.random()*20);while(a===b)b=1+Math.floor(Math.random()*20);let c=Math.max(a,b);question('Which number is bigger?', [{v:a,t:a},{v:b,t:b}],c);break}
+ case'color':{let names=['red','blue','green','yellow'];let colors={red:'#e5484d',blue:'#2677e8',green:'#169b62',yellow:'#d6a400'};let target=names[Math.floor(Math.random()*4)];area.innerHTML=`<h3>Tap the ${target.toUpperCase()} button</h3><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${names.map(n=>`<button data-v="${n}" style="background:${colors[n]};color:${n==='yellow'?'#222':'white'}">${n}</button>`).join('')}</div><p id="gameMsg" class="score"></p><button class="secondary" id="again">New round</button>`;area.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>say(b.dataset.v===target?'Correct! 🌈':'Try again!'));$('again').onclick=()=>startGame(id);break}
+ case'rps':{let opts=['Rock','Paper','Scissors'];let win={Rock:'Scissors',Paper:'Rock',Scissors:'Paper'};area.innerHTML='<div class="bigemoji">✊ ✋ ✌️</div><h3>Choose your move</h3>'+opts.map(o=>`<button data-v="${o}">${o}</button>`).join('')+'<p id="gameMsg" class="score"></p><button class="secondary" id="again">Play again</button>';area.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{let cpu=opts[Math.floor(Math.random()*3)],m=b.dataset.v;say(m===cpu?'Tie! Computer chose '+cpu:m===win[m]?'You win! Computer chose '+cpu:'Computer wins! It chose '+cpu)});$('again').onclick=()=>startGame(id);break}
+ case'math':{let a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9),ans=a+b;question(`What is ${a} + ${b}?`,[ans,ans+1,Math.max(0,ans-1)].sort(()=>Math.random()-.5).map(v=>({v,t:v})),ans);break}
+ case'odd':{let set=['🐼','🐼','🐼','🐸'];question('Pick the different emoji',['🐼','🐼','🐸','🐼'].map((v,i)=>({v:v+'-'+i,t:v})), '🐸-2');break}
+ case'reaction':{area.innerHTML='<div class="bigemoji">⚡</div><h3>Reaction Tap</h3><p>Press Start, wait for GO, then tap as quickly as you can.</p><button id="reactStart">Start</button><button id="reactTap" disabled>Tap when GO!</button><p id="gameMsg" class="score"></p>';reactionReady=false;$('reactTap').disabled=true;$('reactStart').onclick=()=>{clearTimeout(reactionTimer);reactionReady=false;$('gameMsg').textContent='Wait...';$('reactStart').disabled=true;reactionTimer=setTimeout(()=>{reactionReady=true;reactionStart=performance.now();$('gameMsg').textContent='GO!';$('reactTap').disabled=false},1200+Math.random()*2200)};$('reactTap').onclick=()=>{if(!reactionReady){say('Too early! Press Start to try again.');return}say('Your reaction time: '+Math.round(performance.now()-reactionStart)+' ms');$('reactTap').disabled=true;$('reactStart').disabled=false};break}
+ case'word':{let words=[['APPLE','PPALE'],['TIGER','GITRE'],['MANGO','GONAM']];let w=words[Math.floor(Math.random()*words.length)];question('Unscramble: '+w[1], [w[0],'HOUSE','PLANT'].map((v,i)=>({v,t:v})),w[0]);break}
+ case'treasure':{let lucky=String(Math.floor(Math.random()*3));question('Pick a treasure chest!', ['📦','🎁','🧰'].map((v,i)=>({v:String(i),t:v})),lucky,'Treasure found! 💎');break}
+ case'shape':{question('Tap the triangle', [{v:'circle',t:'⚪ Circle'},{v:'triangle',t:'🔺 Triangle'},{v:'square',t:'🟦 Square'}],'triangle');break}
+ case'creative':{area.innerHTML='<div class="bigemoji">🎨</div><h3>Make an emoji picture</h3><p>Tap emojis to add them to your picture.</p><div>'+['🌈','🌟','🐱','🌳','🏠','🌸','🚀','🍀'].map(e=>`<button data-e="${e}" style="font-size:24px">${e}</button>`).join('')+'</div><div id="canvas" style="min-height:70px;background:#fff;border:2px dashed #c9c8f5;border-radius:12px;margin:12px;padding:10px;font-size:30px"></div><button class="secondary" id="clearCanvas">Clear picture</button>';area.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{$('canvas').textContent+=[b.dataset.e,' '].join('')});$('clearCanvas').onclick=()=>{$('canvas').textContent=''};break}
+ default: area.innerHTML='<p>This is a custom game listing. Add playable code to enable gameplay.</p>';
+ }
+}
+$('search').addEventListener('input',renderGames);$('category').addEventListener('change',renderGames);$('sort').addEventListener('change',renderGames);
+$('playModal').addEventListener('click',e=>{if(e.target===$('playModal'))$('playModal').classList.remove('show')});$('closePlay').onclick=()=>{$('playModal').classList.remove('show');clearTimeout(reactionTimer)};
+$('adminOpen').onclick=()=>{$('adminModal').classList.add('show');$('loginBox').style.display=adminLoggedIn?'none':'block';$('adminPanel').classList.toggle('show',adminLoggedIn);if(adminLoggedIn)renderAdmin()};
+$('closeAdmin').onclick=()=>{$('adminModal').classList.remove('show')};$('adminModal').addEventListener('click',e=>{if(e.target===$('adminModal'))$('adminModal').classList.remove('show')});
+// Demo-only client-side credential gate. Do not use this as production security.
+$('loginForm').onsubmit=e=>{e.preventDefault();if($('adminPassword').value==='anil@123'){adminLoggedIn=true;$('loginBox').style.display='none';$('adminPanel').classList.add('show');$('loginMsg').textContent='';renderAdmin()}else $('loginMsg').textContent='Incorrect password. Try again.'};
+$('logout').onclick=()=>{adminLoggedIn=false;$('adminPassword').value='';$('loginBox').style.display='block';$('adminPanel').classList.remove('show')};
+$('addForm').onsubmit=e=>{e.preventDefault();if(!adminLoggedIn)return;custom.push({id:'c'+Date.now(),name:$('newName').value.trim(),emoji:$('newEmoji').value.trim()||'🎲',category:$('newCategory').value,desc:$('newDesc').value.trim(),type:'custom'});saveCustom();e.target.reset();$('newEmoji').value='🎲';renderGames();renderAdmin()};
+function renderAdmin(){$('adminList').innerHTML=custom.length?custom.map(g=>`<div class="adminitem"><span>${esc(g.emoji)} <strong>${esc(g.name)}</strong><br><small>${esc(g.category)} · Custom card</small></span><button class="danger" data-del="${esc(g.id)}">Remove</button></div>`).join(''):'<p class="muted">No custom game cards yet.</p>';$('adminList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{custom=custom.filter(g=>g.id!==b.dataset.del);saveCustom();renderGames();renderAdmin()})}
+renderGames();
+</script>
+</body>
+</html>
